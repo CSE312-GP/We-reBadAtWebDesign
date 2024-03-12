@@ -3,7 +3,7 @@ services:
   mongo:
     image: mongo:4.2.5
   app:
-    build: .
+    build: '.'
     environment:
       WAIT_HOSTS: mongo:27017
     ports:
