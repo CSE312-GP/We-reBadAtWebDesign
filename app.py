@@ -6,7 +6,7 @@ app = Flask(__name__)
 @app.route('/')
 def hello_geek():
     
-    return '<h1>Hello from Flask & Docker</h1>'
+    return open("./Public/animechat.html")
 
 
 if __name__ == "__main__":
