@@ -25,9 +25,9 @@ def serveJS():
     response = send_file('public/javascript.js',mimetype='text/javascript')
     return response
 
-@app.route('/public/images/anime.jpeg')
+@app.route('/public/images/loginpage.jpg')
 def serveAnimeImage():
-    response = send_file('public/images/anime.jpeg',mimetype='image/jpeg')
+    response = send_file('public/images/loginpage.jpg',mimetype='image/jpeg')
     return response
 
 if __name__ == "__main__":
