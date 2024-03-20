@@ -30,5 +30,11 @@ def serveAnimeImage():
     response = send_file('Public/images/loginpage.jpg',mimetype='image/jpeg')
     return response
 
+@app.route('/Public/loggedin.html')
+def serveHTML2():
+    response = make_response(render_template('loggedin.html'))
+    response.headers.add('Content-Type', 'text/html; charset=utf-8')
+    return response
+
 if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0',port=8080)

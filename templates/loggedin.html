@@ -1,0 +1,28 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Post Page</title>
+    <link rel="stylesheet" type="text/css" href="/Public/loggedin.css"/>
+</head>
+<body> 
+    <div class="background-image">
+        <div class='contents'>
+        <!-- Username Display -->   
+            <div id="user-info">
+                <p>Logged in as: <span id="username">Username</span></p>
+            </div>
+        <!-- Textbox to make a post with the username --> 
+            <div id="post-form">
+                <textarea id="user-post" placeholder="What anime/manga did you want to review?"></textarea>
+                <button id="post-button" onclick="submitPost()">Post</button>
+            </div> 
+            <div id="posted-content">
+                <h2>Posts:</h2>
+                <!-- Posts will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+<script src="/Public/feed.js"></script>
+</body>
+</html>

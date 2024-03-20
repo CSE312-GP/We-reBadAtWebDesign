@@ -4,8 +4,10 @@
     <link rel="stylesheet" type="text/css" href="/Public/style_index.css"/>
 </head>
 
+<body onload="addText();">
+
 <div class="welcome">
-    <h2>Otaku Forum: Review, Share, Connect</h2>
+    <h2 id="head"></h2>
 </div>
 <div class="background-image">
     <div class='contents'>
@@ -21,7 +23,7 @@
                 </label>
                 <input type="submit" value="Post">
             </form>
-        
+
             Login:
             <form action="/login" method="post" enctype="application/x-www-form-urlencoded">
                 <label>Username:
