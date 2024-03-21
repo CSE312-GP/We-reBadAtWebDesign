@@ -1,5 +1,7 @@
 #Backend Python for our server
 from flask import Flask, Response, render_template, make_response, send_file
+from server.py import *
+from hashlib import sha256
 
 app = Flask(__name__)
 
@@ -44,6 +46,51 @@ def serveCSS2():
 @app.route('/Public/feed.js')
 def serveJS2():
     response = send_file('Public/feed.js',mimetype='text/javascript')
+    return response
+
+@app.route('/register', method=['POST'])
+def register():
+    # database connection
+    mongo_client = MongoClient("mongo")
+    db = mongo_client["BadAtWebDesign"]
+    account_collection = db["accounts"]
+
+    # grab username, password, and confirm password
+    username = request.form["username_registration"]
+    password = request.form["password_registration"]
+    confirm_password = request.form["<insert confirm_password>"]
+
+    # test for is username is blank
+    if username == "":
+        flash("Passwords don't match")
+        response = redirect("/", code=302)
+        return response
+
+    # test if username already exists
+    for account in account_collection.find():
+        data = {"username": account["username"]}
+        if data["username"] == username:
+            flash("Username already exists")
+            response = redirect("/", code=302)
+            return response
+
+    # test if passwords are different
+    if password != confirm_password:
+        flash("Passwords don't match")
+        response = redirect("/", code=302)
+        return response
+
+    # salt and hash password
+    salt = token_gen()
+    salted_password = password + salt
+    hashed_salted_password = sha256(salted_password.encode()).hexdigest()
+
+    # add credentials and salt to database
+    account_collection.insert_one({"username": str(username), "password": str(hashed_salted_password), "salt": str(salt), "auth": ""})
+
+    flash("Account Created!")
+    response = redirect(render_template('index.html'), code=302)
+    response.headers.add('Content-Type', 'text/html; charset=utf-8')
     return response
 
 if __name__ == "__main__":
