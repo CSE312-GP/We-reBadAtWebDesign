@@ -1,13 +1,50 @@
 #Backend Python for our server
-from flask import Flask
+from flask import Flask, Response, render_template, make_response, send_file
 
 app = Flask(__name__)
 
-@app.route('/')
-def hello_geek():
-    
-    return '<h1>Hello from Flask & Docker</h1>'
+#This decorator (the @ sign) makes the function setXContentTypeOptions run after recieve each request
+@app.after_request
+def setXContentTypeOptions(response: Response):
+    response.headers.add('X-Content-Type-Options', 'nosnif')
+    return response
 
+@app.route('/')
+def serveHTML():
+    response = make_response(render_template('index.html'))
+    response.headers.add('Content-Type', 'text/html; charset=utf-8')
+    return response
+
+@app.route('/Public/style_index.css')
+def serveCSS():
+    response = send_file('Public/style_index.css',mimetype='text/css')
+    return response
+
+@app.route('/Public/javascript.js')
+def serveJS():
+    response = send_file('Public/javascript.js',mimetype='text/javascript')
+    return response
+
+@app.route('/Public/images/loginpage.jpg')
+def serveAnimeImage():
+    response = send_file('Public/images/loginpage.jpg',mimetype='image/jpeg')
+    return response
+
+@app.route('/Public/loggedin.html')
+def serveHTML2():
+    response = make_response(render_template('loggedin.html'))
+    response.headers.add('Content-Type', 'text/html; charset=utf-8')
+    return response
+
+@app.route('/Public/loggedin.css')
+def serveCSS2():
+    response = send_file('Public/loggedin.css',mimetype='text/css')
+    return response
+
+@app.route('/Public/feed.js')
+def serveJS2():
+    response = send_file('Public/feed.js',mimetype='text/javascript')
+    return response
 
 if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0',port=8080)
