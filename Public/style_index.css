@@ -45,6 +45,10 @@ body {
     color: red;
 }
 
+.message {
+    color: #26f02a;
+}
+
 .form {
     margin: 0 auto; 
     width: fit-content;

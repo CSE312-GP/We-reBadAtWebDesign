@@ -65,13 +65,13 @@ def serveRegister():
 
     # test for if username is blank
     if username == "":
-        flash("Username can't be empty")
+        flash("Username can't be empty", "error")
         response = redirect("/", code=302)
         return response
     
     # test for if password is blank
     if password == "":
-        flash("Password can't be empty")
+        flash("Password can't be empty", "error")
         response = redirect("/", code=302)
         return response
 
@@ -79,13 +79,13 @@ def serveRegister():
     for account in account_collection.find():
         data = {"username": account["username"]}
         if data["username"] == username:
-            flash("Username already exists")
+            flash("Username already exists", "error")
             response = redirect("/", code=302)
             return response
 
     # test if passwords are different
     if password != confirm_password:
-        flash("Passwords don't match")
+        flash("Passwords don't match", "error")
         response = redirect("/", code=302)
         return response
 
@@ -97,8 +97,14 @@ def serveRegister():
     # add credentials and salt to database
     account_collection.insert_one({"username": str(username), "password": str(hashed_salted_password), "salt": str(salt), "auth": ""})
 
+    # print testing
+    # accounts in db
+    # for account in account_collection.find():
+    #     data = {"username": account["username"], "password": account["password"], "salt": account["salt"], "auth": account["auth"]}
+    #     flash(str(data)) 
+
     flash("Account Created!")
-    response = redirect(render_template('index.html'), code=302)
+    response = redirect("/", code=302)
     response.headers.add('Content-Type', 'text/html; charset=utf-8')
     return response
 
