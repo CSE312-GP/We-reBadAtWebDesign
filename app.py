@@ -15,19 +15,35 @@ def serveHTML():
     response.headers.add('Content-Type', 'text/html; charset=utf-8')
     return response
 
-@app.route('/public/style_index.css')
+@app.route('/Public/style_index.css')
 def serveCSS():
-    response = send_file('public/style_index.css',mimetype='text/css')
+    response = send_file('Public/style_index.css',mimetype='text/css')
     return response
 
-@app.route('/public/javascript.js')
+@app.route('/Public/javascript.js')
 def serveJS():
-    response = send_file('public/javascript.js',mimetype='text/javascript')
+    response = send_file('Public/javascript.js',mimetype='text/javascript')
     return response
 
-@app.route('/public/images/anime.jpeg')
+@app.route('/Public/images/loginpage.jpg')
 def serveAnimeImage():
-    response = send_file('public/images/anime.jpeg',mimetype='image/jpeg')
+    response = send_file('Public/images/loginpage.jpg',mimetype='image/jpeg')
+    return response
+
+@app.route('/Public/loggedin.html')
+def serveHTML2():
+    response = make_response(render_template('loggedin.html'))
+    response.headers.add('Content-Type', 'text/html; charset=utf-8')
+    return response
+
+@app.route('/Public/loggedin.css')
+def serveCSS2():
+    response = send_file('Public/loggedin.css',mimetype='text/css')
+    return response
+
+@app.route('/Public/feed.js')
+def serveJS2():
+    response = send_file('Public/feed.js',mimetype='text/javascript')
     return response
 
 if __name__ == "__main__":
