@@ -3,13 +3,34 @@ function toggleDropdown() {
     dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
 }
 
-<<<<<<< HEAD
 function clearPostPrompt() {
     const postContent = document.getElementById('user-post').value;
     postContent.innerHTML = "";
+    //if this doesn't work just clear directly with the line below
+    //document.getElementById('user-post').value = "";
 }
+
 function sendPostToDb(postJSON) {
-=======
+    const username = postJSON.username;
+    const anime = postJSON.anime;
+    const review = postJSON.review;
+    const id = postJSON.id;
+    if (review === "") { 
+        return;
+    }
+    const postData = {"username": username, "anime": anime, "review": review, "id": id};
+    const request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+        if (this.readyState === 4 && this.status === 200) {
+            console.log(this.response);
+            submittedPostToHtml(postData); 
+            clearPostPrompt();
+        }
+    };
+    request.open("POST", "/submit-post", true);
+    request.setRequestHeader("Content-Type", "application/json");
+    request.send(JSON.stringify(postData));
+}
 function updateFeed() {
     const request = new XMLHttpRequest();
     request.onreadystatechange = function () {
@@ -29,45 +50,17 @@ function addPostToFeed(postJSON) {
     const feed = document.getElementById("posted-content");
     feed.innerHTML += postToHTML(postJSON);
     feed.scrollIntoView(false);
-    feed.scrollTop = chatMessages.scrollHeight - chatMessages.clientHeight;
+    feed.scrollTop = feed.scrollHeight - feed.clientHeight;
 }
 
 function postToHTML(postJSON) {
->>>>>>> d094b7e005c0ef7439a1450331cc708866e00f2c
     const username = postJSON.username;
     const anime = postJSON.anime;
     const review = postJSON.review;
     const id = postJSON.id;
-<<<<<<< HEAD
-
-    if (review === "") { 
-        return;
-    }
-    const postData = {"username": username, "anime": anime, "review": review, "id": id};
-    const request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-        if (this.readyState === 4 && this.status === 200) {
-            console.log(this.response);
-            submittedPostToHtml(postData); 
-            clearPostPrompt();
-        }
-    };
-    request.open("POST", "/submit-post", true);
-    request.setRequestHeader("Content-Type", "application/json");
-    request.send(JSON.stringify(postData));
-}
-
-
-=======
     let messageHTML = "<button id='like-button' onclick='like(" + id + ")'>&#128077 12</button>"
     messageHTML += "<span id='post_" + id + "'><b>" + username + "- " + anime + "</b>: " + review + "<br/></span>"
     return messageHTML;
-}
-
-function clearFeed() {
-    const chatMessages = document.getElementById("posted-content");
-    chatMessages.innerHTML = "";
-    //THIS MAY GET RID OF THE "POSTS" HEADER
 }
 
 function onLoadFunction() {
@@ -86,6 +79,5 @@ function like(id) {
     request.send(JSON.stringify(ids));
 }
 
->>>>>>> d094b7e005c0ef7439a1450331cc708866e00f2c
 
 
