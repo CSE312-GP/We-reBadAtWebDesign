@@ -1,0 +1,80 @@
+body {
+    background-color: #f5eeee; 
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.welcome {
+    background-color: black; 
+    color: white; 
+    text-align: center; 
+    padding: 10px 0; 
+}
+
+.background-image {
+    background: url('/Public/images/loginpage.jpg') no-repeat center center;
+    background-size: cover; 
+    min-height: 100vh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.paragraph {
+    margin: 20px; 
+    font-size: 16px; 
+}
+
+.post-contents {
+    background-color: #ffffff; 
+    padding: 20px; 
+    display: flex;
+    justify-content: center;
+    border-radius: 15px; 
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+}
+
+.feed-contents {
+    background-color: #ffffff; 
+    padding: 20px; 
+    display: flex;
+    justify-content: center;
+    border-radius: 15px; 
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+}
+
+.users {
+    border: 1px solid #dddddd; 
+    padding: 10px;
+    margin-bottom: 20px; 
+}
+
+.form {
+    margin: 0 auto; 
+    width: fit-content;
+}
+
+.form + form {
+    margin-top: 20px; 
+}
+
+input[type="text"], 
+input[type="password"] {
+    padding: 5px; 
+    margin: 5px 0; 
+    width: 200px; 
+}
+
+input[type="submit"] {
+    background-color: #0077cc; 
+    color: white; 
+    border: none; 
+    padding: 10px 20px; 
+    cursor: pointer; 
+}
+
+input[type="submit"]:hover {
+    /* Dark on hover */
+    background-color: #005fa3; 
+}
