@@ -30,5 +30,21 @@ def serveAnimeImage():
     response = send_file('Public/images/loginpage.jpg',mimetype='image/jpeg')
     return response
 
+@app.route('/Public/loggedin.html')
+def serveHTML2():
+    response = make_response(render_template('loggedin.html'))
+    response.headers.add('Content-Type', 'text/html; charset=utf-8')
+    return response
+
+@app.route('/Public/loggedin.css')
+def serveCSS2():
+    response = send_file('Public/loggedin.css',mimetype='text/css')
+    return response
+
+@app.route('/Public/feed.js')
+def serveJS2():
+    response = send_file('Public/feed.js',mimetype='text/javascript')
+    return response
+
 if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0',port=8080)
