@@ -74,7 +74,6 @@ function onLoadFunction() {
     setInterval(updateFeed, 5000);
 }
 
-
 function like(id) {
     const request = new XMLHttpRequest();
     request.onreadystatechange = function () {
@@ -86,6 +85,7 @@ function like(id) {
     request.open("POST", "/like");
     request.send(JSON.stringify(ids));
 }
+
 >>>>>>> d094b7e005c0ef7439a1450331cc708866e00f2c
 
 
