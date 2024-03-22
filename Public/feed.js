@@ -57,3 +57,5 @@ function like(id) {
     request.open("POST", "/like");
     request.send(JSON.stringify(ids));
 }
+
+
