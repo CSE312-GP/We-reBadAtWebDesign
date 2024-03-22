@@ -23,7 +23,7 @@ function sendPostToDb(postJSON) {
     request.onreadystatechange = function() {
         if (this.readyState === 4 && this.status === 200) {
             console.log(this.response);
-            submittedPostToHtml(postData); 
+            updateFeed()
             clearPostPrompt();
         }
     };
@@ -31,6 +31,7 @@ function sendPostToDb(postJSON) {
     request.setRequestHeader("Content-Type", "application/json");
     request.send(JSON.stringify(postData));
 }
+
 function updateFeed() {
     const request = new XMLHttpRequest();
     request.onreadystatechange = function () {
@@ -58,7 +59,7 @@ function postToHTML(postJSON) {
     const anime = postJSON.anime;
     const review = postJSON.review;
     const id = postJSON.id;
-    let messageHTML = "<button id='like-button' onclick='like(" + id + ")'>&#128077 12</button>"
+    let messageHTML = "<button id='like-button-" + id + "' onclick='like(" + id + ")'>&#128077 12</button>"
     messageHTML += "<span id='post_" + id + "'><b>" + username + "- " + anime + "</b>: " + review + "<br/></span>"
     return messageHTML;
 }
@@ -71,13 +72,15 @@ function like(id) {
     const request = new XMLHttpRequest();
     request.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
+            const responseData = JSON.parse(this.responseText);
+            const likeButtonText = getElementById("like-button-" + responseData.id)         
+            likeButtonText.innerHTML = "&#128077 " + responseData.like
             console.log(this.response);
         }
     }
-    const ids = {"id": id};
+    const ids = {"username": username, "id": id};
     request.open("POST", "/like");
     request.send(JSON.stringify(ids));
+    //request sent has username and id: response should have the id and the number of likes
+    //you can do whatever you want to handle if the perosn already has liked it
 }
-
-
-
