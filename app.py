@@ -20,6 +20,12 @@ def serveHTML():
     response.headers.add('Content-Type', 'text/html; charset=utf-8')
     return response
 
+@app.route('/AnimeChatApp', methods=['GET'])
+def serveAnimeChatApp():
+    response = make_response(render_template('loggedin.html'))
+    response.headers.add('Content-Type', 'text/html; charset=utf-8')
+    return response
+
 @app.route('/Public/style_index.css')
 def serveCSS():
     response = send_file('Public/style_index.css',mimetype='text/css')
@@ -51,6 +57,9 @@ def serveJS2():
     response = send_file('Public/feed.js',mimetype='text/javascript')
     return response
 
+# ===========
+# Register
+# ===========
 @app.route('/register', methods=['POST'])
 def serveRegister():
     # database connection
@@ -58,7 +67,13 @@ def serveRegister():
     db = mongo_client["BadAtWebDesign"]
     account_collection = db["accounts"]
 
-    # grab username, password, and confirm password
+    # print testing
+    # accounts in db
+    for account in account_collection.find():
+        data = {"username": account["username"], "password": account["password"], "salt": account["salt"], "auth": account["auth"]}
+        flash(str(data))
+
+    # grab username, password, and confirm password. Make sure to html injection protect.
     username = request.form["username_registration"]
     password = request.form["password_registration"]
     confirm_password = request.form["password_confirmation"]
@@ -97,16 +112,51 @@ def serveRegister():
     # add credentials and salt to database
     account_collection.insert_one({"username": str(username), "password": str(hashed_salted_password), "salt": str(salt), "auth": ""})
 
-    # print testing
-    # accounts in db
-    # for account in account_collection.find():
-    #     data = {"username": account["username"], "password": account["password"], "salt": account["salt"], "auth": account["auth"]}
-    #     flash(str(data)) 
-
+    # display success message and redirect
     flash("Account Created!")
     response = redirect("/", code=302)
     response.headers.add('Content-Type', 'text/html; charset=utf-8')
     return response
+
+# ===========
+# Login
+# ===========
+@app.route('/login', methods=['POST'])
+def serveLogin():
+    response = redirect("/AnimeChatApp", code=302)
+    response.headers.add('Content-Type', 'text/html; charset=utf-8')
+
+    # database connection
+    mongo_client = MongoClient("mongo")
+    db = mongo_client["BadAtWebDesign"]
+    account_collection = db["accounts"]
+
+    # get login credentials
+    username = request.form["username_login"]
+    password = request.form["password_login"]
+
+    # check if user exists
+    for account in account_collection.find():
+        data = {"username": account["username"], "password": account["password"], "salt": account["salt"]}
+        salted_password = password + data["salt"]
+
+        # if account exists
+        if data["username"] == username and data["password"] == str(sha256(salted_password.encode('utf-8')).hexdigest()):
+            # update auth in database to hashed auth token
+            auth_token = token_gen()
+            hashed_auth_token = sha256(auth_token.encode('utf-8')).hexdigest()
+            my_query = {"username": username}
+            new_values = {"$set": {"auth": str(hashed_auth_token)}}
+            account_collection.update_one(my_query, new_values)
+
+            # set cookie in response to auth token plain text
+            response.set_cookie("AnimeApp_Auth", str(auth_token), max_age=3600, httponly=True)
+
+    # redirect to the loggedin page
+    return response
+
+    
+
 
 if __name__ == "__main__":
     app.secret_key = 'super secret key'
