@@ -3,7 +3,9 @@
     <title>CSE312 Group Project</title>
     <link rel="stylesheet" type="text/css" href="/Public/style_index.css"/>
 </head>
+
 <script src="/Public/javascript.js" defer></script>
+
 <body onload="addText();">
 
 <div class="welcome">
@@ -14,6 +16,26 @@
         <div class="users">
             Register:
             <form action="/register" method="post" enctype="application/x-www-form-urlencoded">
+                <label>Username:
+                    <input id="reg-form-username" type="text" name="username_registration"/>
+                </label>
+                <br/>
+                <label>Password:&nbsp;
+                    <input id="reg-form-pass" type="password" name="password_registration">
+                </label>
+                <input type="submit" value="Post">
+            </form>
+        
+            Login:
+            <form action="/login" method="post" enctype="application/x-www-form-urlencoded">
+                <label>Username:
+                    <input id="login-form-username" type="text" name="username_login"/>
+                </label>
+                <br/>
+                <label>Password:&nbsp;
+                    <input id="login-form-pass" type="password" name="password_login">
+                </label>
+                <input type="submit" value="Post">
                 <label>Username:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <input id="reg-form-username" type="text" name="username_registration"/>
                 </label>
