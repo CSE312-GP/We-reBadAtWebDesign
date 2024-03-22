@@ -41,6 +41,10 @@ body {
     margin-bottom: 20px; 
 }
 
+.error {
+    color: red;
+}
+
 .form {
     margin: 0 auto; 
     width: fit-content;

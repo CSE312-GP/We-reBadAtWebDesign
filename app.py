@@ -1,7 +1,10 @@
 #Backend Python for our server
-from flask import Flask, Response, render_template, make_response, send_file
-from server.py import *
+from flask import Flask, Response, flash, redirect, render_template, make_response, request, send_file
 from hashlib import sha256
+
+from pymongo import MongoClient
+
+from Public.response_functions import token_gen
 
 app = Flask(__name__)
 
@@ -48,8 +51,8 @@ def serveJS2():
     response = send_file('Public/feed.js',mimetype='text/javascript')
     return response
 
-@app.route('/register', method=['POST'])
-def register():
+@app.route('/register', methods=['POST'])
+def serveRegister():
     # database connection
     mongo_client = MongoClient("mongo")
     db = mongo_client["BadAtWebDesign"]
@@ -58,11 +61,17 @@ def register():
     # grab username, password, and confirm password
     username = request.form["username_registration"]
     password = request.form["password_registration"]
-    confirm_password = request.form["<insert confirm_password>"]
+    confirm_password = request.form["password_confirmation"]
 
-    # test for is username is blank
+    # test for if username is blank
     if username == "":
-        flash("Passwords don't match")
+        flash("Username can't be empty")
+        response = redirect("/", code=302)
+        return response
+    
+    # test for if password is blank
+    if password == "":
+        flash("Password can't be empty")
         response = redirect("/", code=302)
         return response
 
@@ -94,4 +103,6 @@ def register():
     return response
 
 if __name__ == "__main__":
+    app.secret_key = 'super secret key'
+    app.config['SESSION_TYPE'] = 'filesystem'
     app.run(debug=True,host='0.0.0.0',port=8080)

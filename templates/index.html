@@ -38,9 +38,20 @@
                 </label>
                 <input type="submit" value="Sign In">
             </form>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for msg in messages %}
+                        <div class="error">{{msg}}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %} 
         </div>
+        <div class="errors">
+
+        </div>   
     </div>
 </div>
+
 
 
 <script src="/Public/javascript.js"></script>
