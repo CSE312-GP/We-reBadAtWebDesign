@@ -69,9 +69,9 @@ def serveRegister():
 
     # print testing
     # accounts in db
-    for account in account_collection.find():
-        data = {"username": account["username"], "password": account["password"], "salt": account["salt"], "auth": account["auth"]}
-        flash(str(data))
+    # for account in account_collection.find():
+    #     data = {"username": account["username"], "password": account["password"], "salt": account["salt"], "auth": account["auth"]}
+    #     flash(str(data))
 
     # grab username, password, and confirm password. Make sure to html injection protect.
     username = request.form["username_registration"]
@@ -123,9 +123,6 @@ def serveRegister():
 # ===========
 @app.route('/login', methods=['POST'])
 def serveLogin():
-    response = redirect("/AnimeChatApp", code=302)
-    response.headers.add('Content-Type', 'text/html; charset=utf-8')
-
     # database connection
     mongo_client = MongoClient("mongo")
     db = mongo_client["BadAtWebDesign"]
@@ -150,9 +147,17 @@ def serveLogin():
             account_collection.update_one(my_query, new_values)
 
             # set cookie in response to auth token plain text
+            response = redirect("/AnimeChatApp", code=302)
             response.set_cookie("AnimeApp_Auth", str(auth_token), max_age=3600, httponly=True)
 
-    # redirect to the loggedin page
+            # redirect to new page
+            response.headers.add('Content-Type', 'text/html; charset=utf-8')
+            return response
+
+    # redirect to the login page if password incorrect
+    flash("Username or password is incorrect", "error")
+    response = redirect("/", code=302)
+    response.headers.add('Content-Type', 'text/html; charset=utf-8')
     return response
 
     
