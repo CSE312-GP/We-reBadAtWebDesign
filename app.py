@@ -1,5 +1,6 @@
 #Backend Python for our server
 import json
+import sys
 from flask import Flask, Response, flash, redirect, render_template, make_response, request, send_file
 from hashlib import sha256
 
@@ -219,12 +220,14 @@ def postMessage():
     # check if auth is valid
     user_auth = request.cookies["AnimeApp_Auth"]
     for account in account_collection.find():
-        data = {"username": account["username"], "auth": account["auth"]}
-        if data["auth"] == sha256(user_auth.encode('utf-8')).hexdigest():
+        accout_data = {"username": account["username"], "auth": account["auth"]}
+        if accout_data["auth"] == sha256(user_auth.encode('utf-8')).hexdigest():
             # add post to chat collection
             message = request.json
-            chat_collection.insert_one({"username": message["username"], "anime": message["anime"], 
-                                        "review": message["review"], "id": message["id"], "likes": message["likes"]})
+            # for debugging
+            print(message, file=sys.stderr)
+            chat_collection.insert_one({"username": accout_data["username"], "anime": message["anime"], 
+                                        "review": message["review"], "id": message["id"], "likes": []})
             response = make_response("Valid Post", 200)
             return response
         

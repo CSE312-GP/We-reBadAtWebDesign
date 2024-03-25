@@ -8,30 +8,39 @@ function clearPostPrompt() {
     document.getElementById('anime-name').value = "";
 }
 
-function sendPostToDb(postJSON) {
-    //const username = postJSON.username;
+function sendPostToDb() {
     const reviewBox = document.getElementById("user-post");
     const review = reviewBox.value;
     const animeBox = document.getElementById("anime-name");
     const anime = animeBox.value;
 
-    //const id = postJSON.id;
     if (review === "" || anime === "") { 
         return;
     }
-    const postData = {"anime": anime, "review": review,};
+
+    const iD = generateId();
+    const postData = {"anime": anime, "review": review, "id": iD};
+
     const request = new XMLHttpRequest();
     request.onreadystatechange = function() {
         if (this.readyState === 4 && this.status === 200) {
             console.log(this.response);
-            updateFeed()
-            //addPostToFeed()
+            updateFeed();
             clearPostPrompt();
         }
     };
     request.open("POST", "/submit-post", true);
     request.setRequestHeader("Content-Type", "application/json");
     request.send(JSON.stringify(postData));
+}
+
+function generateId() {
+    const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+    let token = '';
+    for (let i = 0; i < 30; i++) {
+        token += alphabet[Math.floor(Math.random() * alphabet.length)];
+    }   
+    return token;
 }
 
 function updateFeed() {
