@@ -15,10 +15,11 @@ function sendPostToDb(postJSON) {
     const anime = postJSON.anime;
     const review = postJSON.review;
     const id = postJSON.id;
+    const likes = [];
     if (review === "") { 
         return;
     }
-    const postData = {"username": username, "anime": anime, "review": review, "id": id};
+    const postData = {"username": username, "anime": anime, "review": review, "id": id, "likes": likes};
     const request = new XMLHttpRequest();
     request.onreadystatechange = function() {
         if (this.readyState === 4 && this.status === 200) {

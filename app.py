@@ -1,4 +1,5 @@
 #Backend Python for our server
+import json
 from flask import Flask, Response, flash, redirect, render_template, make_response, request, send_file
 from hashlib import sha256
 
@@ -22,7 +23,19 @@ def serveHTML():
 
 @app.route('/AnimeChatApp', methods=['GET'])
 def serveAnimeChatApp():
-    response = make_response(render_template('loggedin.html'))
+    # database connection
+    mongo_client = MongoClient("mongo")
+    db = mongo_client["BadAtWebDesign"]
+    account_collection = db["accounts"]
+
+    user_auth = request.cookies["AnimeApp_Auth"]
+    user_username = "Something"
+    for account in account_collection.find():
+        account_data = {"username": account["username"], "auth": account["auth"]}
+        if account_data["auth"] == sha256(user_auth.encode('utf-8')).hexdigest():
+            user_username = account_data["username"]
+    # replace {{username}}
+    response = make_response(render_template('loggedin.html', username=user_username))
     response.headers.add('Content-Type', 'text/html; charset=utf-8')
     return response
 
@@ -160,7 +173,101 @@ def serveLogin():
     response.headers.add('Content-Type', 'text/html; charset=utf-8')
     return response
 
+# ===========
+# Post Message
+# ===========
+@app.route('/submit-post', methods=['POST'])
+def postMessage():
+    mongo_client = MongoClient("mongo")
+    db = mongo_client["BadAtWebDesign"]
+    account_collection = db["accounts"]
+    chat_collection = db["chat"]
+
+    # Checking for the auth token to determine users from guests
+    if "AnimeApp_Auth" not in request.cookies:
+        # send to login
+        response = redirect("/", code=302)
+        response.headers.add('Content-Type', 'text/html; charset=utf-8')
+        return response
     
+    
+    # check if auth is valid
+    user_auth = request.cookies["AnimeApp_Auth"]
+    for account in account_collection.find():
+        data = {"username": account["username"], "auth": account["auth"]}
+        if data["auth"] == sha256(user_auth.encode('utf-8')).hexdigest():
+            # add post to chat collection
+            message = request.json
+            chat_collection.insert_one({"username": message["username"], "anime": message["anime"], 
+                                        "review": message["review"], "id": message["id"], "likes": message["likes"]})
+            response = make_response("Valid Post", 200)
+            return response
+        
+    # if not valid auth
+    response = make_response("Not allowed", 403)
+    return response
+
+
+# ===========
+# Get Chat
+# ===========
+@app.route('/feed', methods=['GET'])
+def getMessage():
+    mongo_client = MongoClient("mongo")
+    db = mongo_client["BadAtWebDesign"]
+    chat_collection = db["chat"]
+
+    all_data = list(chat_collection.find({}, {'_id': 0}))
+    all_data = json.dumps(all_data)
+    response = make_response(all_data, 200)
+    return response
+
+# ==============
+# Like_Button
+# ==============
+@app.route('/like', methods=['POST'])
+def serveLike():
+    # database connection
+    mongo_client = MongoClient("mongo")
+    db = mongo_client["BadAtWebDesign"]
+    account_collection = db["accounts"]
+    chat_collection = db["chat"]
+
+    # match account with the message in body from auth token
+    for account in account_collection.find():
+        account_data = {"username": account["username"], "auth": account["auth"]}
+        if "AnimeApp_Auth" not in request.cookies:
+            response = redirect("/", code=302)
+            response.headers.add('Content-Type', 'text/html; charset=utf-8')
+            return response
+        user_auth = request.cookies["AnimeApp_Auth"]
+        liked_message_info = request.json
+        # if auth tokens match and user is not in the liked list already
+        if account_data["auth"] != sha256(user_auth.encode('utf-8')).hexdigest():
+            # send 403 response
+            response = make_response("Not allowed", 403)
+            return response
+        else:
+            # Look for if message exists
+            for chat in chat_collection.find():
+                chat_data = {"username": chat["username"], "anime": chat["anime"], "review": chat["review"], 
+                        "id": chat["id"], "likes": chat["likes"]}
+                # make sure message id matches the liked message
+                if chat_data["id"] == liked_message_info["id"]:
+                    user_liked_message = False
+                    for liked_user in chat_data["likes"]:
+                        if liked_user == chat_data["username"]:
+                            user_liked_message = True
+                    # if user has already liked message send 403
+                    if user_liked_message:
+                        response = redirect("/", code=302)
+                        response.headers.add('Content-Type', 'text/html; charset=utf-8')
+                        return response
+                    # if user hasn't liked message then add user to the likes array
+                    else:
+                        chat_data["likes"].append(chat_data["username"])
+                        response = make_response("Valid Like", 200)
+                        return response
 
 
 if __name__ == "__main__":
