@@ -181,7 +181,7 @@ def serveLogin():
             # update auth in database to hashed auth token
             auth_token = token_gen()
             hashed_auth_token = sha256(auth_token.encode('utf-8')).hexdigest()
-            my_query = {"username": username}
+            my_query = {"username": account["username"], "password": account["password"]}
             new_values = {"$set": {"auth": str(hashed_auth_token)}}
             account_collection.update_one(my_query, new_values)
 
@@ -225,9 +225,9 @@ def postMessage():
             # add post to chat collection
             message = request.json
             # for debugging
-            print(message, file=sys.stderr)
+            #print(message, file=sys.stderr)
             chat_collection.insert_one({"username": accout_data["username"], "anime": message["anime"], 
-                                        "review": message["review"], "id": message["id"], "likes": []})
+                                        "review": message["review"], "id": str(message["id"]), "likes": []})
             response = make_response("Valid Post", 200)
             return response
         
@@ -269,22 +269,25 @@ def serveLike():
             response.headers.add('Content-Type', 'text/html; charset=utf-8')
             return response
         user_auth = request.cookies["AnimeApp_Auth"]
-        liked_message_info = request.json
+        print("We made it to user cookie", file=sys.stderr)
         # if auth tokens match and user is not in the liked list already
-        if account_data["auth"] != sha256(user_auth.encode('utf-8')).hexdigest():
-            # send 403 response
-            response = make_response("Not allowed", 403)
-            return response
-        else:
+        if str(account_data["auth"]) == str(sha256(user_auth.encode('utf-8')).hexdigest()):
+            print("We made it to account check", file=sys.stderr)
+            liked_message_info = request.form["postId"]
             # Look for if message exists
             for chat in chat_collection.find():
                 chat_data = {"username": chat["username"], "anime": chat["anime"], "review": chat["review"], 
                         "id": chat["id"], "likes": chat["likes"]}
                 # make sure message id matches the liked message
-                if chat_data["id"] == liked_message_info["id"]:
+                print(liked_message_info, file=sys.stderr)
+                print(chat_data["id"], file=sys.stderr)
+                if str(chat_data["id"]) == str(liked_message_info):
+                    print("Made it to id message check", file=sys.stderr)
+                    for message in chat_collection.find():
+                            print(message, file=sys.stderr)
                     user_liked_message = False
                     for liked_user in chat_data["likes"]:
-                        if liked_user == chat_data["username"]:
+                        if str(liked_user) == str(account_data["username"]):
                             user_liked_message = True
                     # if user has already liked message send 403
                     if user_liked_message:
@@ -293,9 +296,32 @@ def serveLike():
                         return response
                     # if user hasn't liked message then add user to the likes array
                     else:
-                        chat_data["likes"].append(chat_data["username"])
-                        response = make_response("Valid Like", 200)
+                        print("We make it here", file=sys.stderr)
+                        my_query = {"id": chat_data["id"]}
+                        print(chat_data["likes"], file=sys.stderr)
+                        list = []
+                        for item in chat_data["likes"]:
+                            list.append(str(item))
+                        list.append(str(account_data["username"]))
+                        new_values = {"$set": {"likes": list}}
+                        chat_collection.update_one(my_query, new_values)
+                        for message in chat_collection.find():
+                            print(message, file=sys.stderr)
+                        response = redirect("/AnimeChatApp", code=302)
+                        response.headers.add('Content-Type', 'text/html; charset=utf-8')
                         return response
+    # send 403 response
+    print(account_data["auth"], file=sys.stderr)
+    for account in account_collection.find():
+        print(account, file=sys.stderr)
+    print(user_auth, file=sys.stderr)
+    print(sha256(user_auth.encode('utf-8')).hexdigest(), file=sys.stderr)
+    for chats in chat_collection.find():
+        print(chats, file=sys.stderr)
+    print(user_auth, file=sys.stderr)
+    response = redirect("/AnimeChatApp", code=302)
+    response.headers.add('Content-Type', 'text/html; charset=utf-8')
+    return response
 # ===========
 # Logout
 # ===========
