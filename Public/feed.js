@@ -25,8 +25,8 @@ function sendPostToDb() {
     request.onreadystatechange = function() {
         if (this.readyState === 4 && this.status === 200) {
             console.log(this.response);
-            updateFeed();
             clearPostPrompt();
+            updateFeed();
         }
     };
     request.open("POST", "/submit-post", true);
@@ -70,11 +70,15 @@ function postToHTML(postJSON) {
     const anime = postJSON.anime;
     const review = postJSON.review;
     const id = postJSON.id;
-    let messageHTML = "<button id='like-button-" + id + "' onclick='like(" + id + ")'>&#128077 12</button>"
-    messageHTML += "<span id='post_" + id + "'><b>" + username + "- " + anime + "</b>: " + review + "<br/></span>"
+
+    let messageHTML = "<form action='/like' method='POST'>";
+    messageHTML += "<input type='hidden' name='postId' value='" + id + "'>"; 
+    messageHTML += "<button type='submit' class='button-style' id='like-button-" + id + "'>&#128077; " + "{{likes}}" + "</button>";
+    messageHTML += "</form>";
+
+    messageHTML += "<span id='post_" + id + "'><b>" + username + "- " + anime + "</b>: " + review + "<br/></span>";
     return messageHTML;
 }
-
 function onLoadFunction() {
     //document.addEventListener("keypress", function (event) {
         //if (event.code === "Enter") {
