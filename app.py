@@ -17,6 +17,27 @@ def setXContentTypeOptions(response: Response):
 
 @app.route('/')
 def serveHTML():
+    # database connection
+    mongo_client = MongoClient("mongo")
+    db = mongo_client["BadAtWebDesign"]
+    account_collection = db["accounts"]
+
+    # check if auth cookie exists
+    if "AnimeApp_Auth" not in request.cookies:
+        response = make_response(render_template('index.html'))
+        response.headers.add('Content-Type', 'text/html; charset=utf-8')
+        return response
+    
+    # check if auth token is legit
+    user_auth = request.cookies["AnimeApp_Auth"]
+    for account in account_collection.find():
+        account_data = {"username": account["username"], "auth": account["auth"]}
+        # if user is legit then redirect to /AnimeChatApp
+        if account_data["auth"] == sha256(user_auth.encode()).hexdigest():
+            response = redirect("/AnimeChatApp", code=302)
+            response.headers.add('Content-Type', 'text/html; charset=utf-8')
+            return response
+    # if user is not legit send normal html
     response = make_response(render_template('index.html'))
     response.headers.add('Content-Type', 'text/html; charset=utf-8')
     return response
@@ -29,13 +50,17 @@ def serveAnimeChatApp():
     account_collection = db["accounts"]
 
     user_auth = request.cookies["AnimeApp_Auth"]
-    user_username = "Something"
+    user_username = ""
     for account in account_collection.find():
         account_data = {"username": account["username"], "auth": account["auth"]}
         if account_data["auth"] == sha256(user_auth.encode('utf-8')).hexdigest():
             user_username = account_data["username"]
-    # replace {{username}}
-    response = make_response(render_template('loggedin.html', username=user_username))
+            # replace {{username}}
+            response = make_response(render_template('loggedin.html', username=user_username))
+            response.headers.add('Content-Type', 'text/html; charset=utf-8')
+            return response
+    
+    response = redirect("/", code=302)
     response.headers.add('Content-Type', 'text/html; charset=utf-8')
     return response
 
@@ -268,6 +293,43 @@ def serveLike():
                         chat_data["likes"].append(chat_data["username"])
                         response = make_response("Valid Like", 200)
                         return response
+# ===========
+# Logout
+# ===========
+@app.route('/logout', methods=['POST'])
+def serveLogout():
+    # database connection
+    mongo_client = MongoClient("mongo")
+    db = mongo_client["BadAtWebDesign"]
+    account_collection = db["accounts"]
+
+    # check if auth cookie exists
+    if "AnimeApp_Auth" not in request.cookies:
+        response = redirect("/", code=302)
+        response.headers.add('Content-Type', 'text/html; charset=utf-8')
+        return response
+    
+    # check if auth token is legit
+    user_auth = request.cookies["AnimeApp_Auth"]
+    for account in account_collection.find():
+        account_data = {"username": account["username"], "auth": account["auth"]}
+        # if legit user then set auth in db to null and remove cookie
+        if account_data["auth"] == sha256(user_auth.encode()).hexdigest():
+            # delete auth token in database
+            my_query = {"auth": str(sha256(user_auth.encode()).hexdigest())}
+            new_values = {"$set": {"auth": ""}}
+            account_collection.update_one(my_query, new_values)
+            # delete auth cookie
+            response = redirect("/", code=302)
+            response.headers.add('Content-Type', 'text/html; charset=utf-8')
+            response.set_cookie("AnimeApp_Auth", "", max_age=0, httponly=True)
+            return response
+        else:
+            # if not a legit user then just delete the cookie
+            response = redirect("/", code=302)
+            response.headers.add('Content-Type', 'text/html; charset=utf-8')
+            response.set_cookie("AnimeApp_Auth", "", max_age=0, httponly=True)
+            return response
 
 
 if __name__ == "__main__":
