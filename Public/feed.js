@@ -47,7 +47,7 @@ function updateFeed() {
     const request = new XMLHttpRequest();
     request.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
-            clearChat();
+            //clearPostPrompt()
             const posts = JSON.parse(this.response);
             for (const post of posts) {
                 addPostToFeed(post);
