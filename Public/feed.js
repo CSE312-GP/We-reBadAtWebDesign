@@ -4,10 +4,10 @@ function toggleDropdown() {
 }
 
 function clearPostPrompt() {
-    const postContent = document.getElementById('user-post').value;
+    document.getElementById('user-post').value = "";
     postContent.innerHTML = "";
-    //if this doesn't work just clear directly with the line below
-    //document.getElementById('user-post').value = "";
+    document.getElementById('anime-name').value = "";
+    animeContent.innerHTML = "";
 }
 
 function sendPostToDb(postJSON) {
@@ -69,11 +69,11 @@ function postToHTML(postJSON) {
 }
 
 function onLoadFunction() {
-    document.addEventListener("keypress", function (event) {
-        if (event.code === "Enter") {
-            sendPostToDb();
-        }
-    });
+    //document.addEventListener("keypress", function (event) {
+        //if (event.code === "Enter") {
+          //  sendPostToDb();
+        //}
+    //});
 
     setInterval(updateFeed, 5000);
 }
