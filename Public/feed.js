@@ -11,19 +11,23 @@ function clearPostPrompt() {
 }
 
 function sendPostToDb(postJSON) {
-    const username = postJSON.username;
-    const anime = postJSON.anime;
-    const review = postJSON.review;
-    const id = postJSON.id;
-    if (review === "") { 
+    //const username = postJSON.username;
+    const reviewBox = document.getElementById("user-post");
+    const review = reviewBox.value;
+    const animeBox = document.getElementById("anime-name");
+    const anime = animeBox.value;
+
+    //const id = postJSON.id;
+    if (review === "" || anime === "") { 
         return;
     }
-    const postData = {"username": username, "anime": anime, "review": review, "id": id};
+    const postData = {"anime": anime, "review": review,};
     const request = new XMLHttpRequest();
     request.onreadystatechange = function() {
         if (this.readyState === 4 && this.status === 200) {
             console.log(this.response);
             updateFeed()
+            //addPostToFeed()
             clearPostPrompt();
         }
     };
@@ -65,6 +69,12 @@ function postToHTML(postJSON) {
 }
 
 function onLoadFunction() {
+    document.addEventListener("keypress", function (event) {
+        if (event.code === "Enter") {
+            sendPostToDb();
+        }
+    });
+
     setInterval(updateFeed, 5000);
 }
 
