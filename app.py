@@ -22,7 +22,19 @@ def serveHTML():
 
 @app.route('/AnimeChatApp', methods=['GET'])
 def serveAnimeChatApp():
-    response = make_response(render_template('loggedin.html'))
+    # database connection
+    mongo_client = MongoClient("mongo")
+    db = mongo_client["BadAtWebDesign"]
+    account_collection = db["accounts"]
+
+    user_auth = request.cookies["AnimeApp_Auth"]
+    user_username = "Something"
+    for account in account_collection.find():
+        account_data = {"username": account["username"], "auth": account["auth"]}
+        if account_data["auth"] == sha256(user_auth.encode('utf-8')).hexdigest():
+            user_username = account_data["username"]
+    # replace {{username}}
+    response = make_response(render_template('loggedin.html', username=user_username))
     response.headers.add('Content-Type', 'text/html; charset=utf-8')
     return response
 
