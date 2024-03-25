@@ -36,11 +36,10 @@ def serveHTML():
             response = redirect("/AnimeChatApp", code=302)
             response.headers.add('Content-Type', 'text/html; charset=utf-8')
             return response
-        else:
-            # if user is not legit send normal html
-            response = make_response(render_template('index.html'))
-            response.headers.add('Content-Type', 'text/html; charset=utf-8')
-            return response
+    # if user is not legit send normal html
+    response = make_response(render_template('index.html'))
+    response.headers.add('Content-Type', 'text/html; charset=utf-8')
+    return response
 
 @app.route('/AnimeChatApp', methods=['GET'])
 def serveAnimeChatApp():
