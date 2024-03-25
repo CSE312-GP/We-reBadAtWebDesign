@@ -160,7 +160,51 @@ def serveLogin():
     response.headers.add('Content-Type', 'text/html; charset=utf-8')
     return response
 
-    
+# ===========
+# Post Message
+# ===========
+@app.route('/chat_messages', methods=['POST'])
+def postMessage():
+    mongo_client = MongoClient("mongo")
+    db = mongo_client["BadAtWebDesign"]
+    chat_collection = db["chat"]
+    account_collection = db["accounts"]
+    id_counter = db["id"]
+
+    # Checking for the auth token to determine users from guests
+    if "AnimeApp_Auth" in request.cookies:
+        username = account_collection.find_one({"auth": request.cookies["AnimeApp_Auth"]})
+    else:
+        username = "Guest"
+
+    # Create a unique id for the message by using a database.
+    # count_documents does not work, since deleting a message could cause duplicate ids.
+    if id_counter.find_one({}) is None:
+        message_id = "0"
+        id_counter.insert_one({'last_used': 0})
+    else:
+        last_id = id_counter.find_one({})['last_used']
+        x = int(last_id) + 1
+        message_id = str(x)
+        id_counter.update_one({}, {'$set': {'last_used': x}})
+
+    # Get the message here
+    message = request.form["message_post"]
+
+    # Add the message to the database, along with its id and the sender's username
+    chat_collection.insert_one({"username": username, "id": message_id, "message": message})
+
+# ===========
+# Get Chat
+# ===========
+@app.route('/chat_messages', methods=['GET'])
+def getMessage():
+    mongo_client = MongoClient("mongo")
+    db = mongo_client["BadAtWebDesign"]
+    chat_collection = db["chat"]
+
+    all_data = list(chat_collection.find({}, {'_id': 0}))
+    response = make_response(all_data, 200)
 
 
 if __name__ == "__main__":
