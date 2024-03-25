@@ -47,7 +47,7 @@ function updateFeed() {
     const request = new XMLHttpRequest();
     request.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
-            clearChat();
+            clearFeed();
             const posts = JSON.parse(this.response);
             for (const post of posts) {
                 addPostToFeed(post);
@@ -56,6 +56,11 @@ function updateFeed() {
     }
     request.open("GET", "/feed");
     request.send();
+}
+
+function clearFeed() {
+    const chatMessages = document.getElementById("posted-content");
+    chatMessages.innerHTML = "";
 }
 
 function addPostToFeed(postJSON) {
@@ -101,3 +106,5 @@ function like(id) {
     //request sent has username and id: response should have the id and the number of likes
     //you can do whatever you want to handle if the perosn already has liked it
 }
+
+updateFeed();
