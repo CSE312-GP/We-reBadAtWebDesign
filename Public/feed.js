@@ -5,9 +5,7 @@ function toggleDropdown() {
 
 function clearPostPrompt() {
     document.getElementById('user-post').value = "";
-    postContent.innerHTML = "";
     document.getElementById('anime-name').value = "";
-    animeContent.innerHTML = "";
 }
 
 function sendPostToDb(postJSON) {

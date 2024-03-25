@@ -65,6 +65,17 @@ input[type="submit"] {
     cursor: pointer; 
 }
 
+#logout-button {
+    padding: 5px 10px;
+    margin-left: 20px;
+    background-color: #f44336; /* Example color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+
 input[type="submit"]:hover {
     /* Dark on hover */
     background-color: #005fa3; 
