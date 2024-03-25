@@ -4,7 +4,7 @@
     <title>User Post Page</title>
     <link rel="stylesheet" type="text/css" href="/Public/loggedin.css"/>
 </head>
-<body onload="onload();"> 
+<body onload="onLoadFunction();"> 
     <div class="background-image">
         <div class='post-contents'>
 <body> 
@@ -19,8 +19,9 @@
             </div>
         <!-- Textbox to make a post with the username --> 
             <div id="post-form">
+                <input type="text" id="anime-name" placeholder="Enter Anime Name" />
                 <textarea id="user-post" placeholder="What anime/manga did you want to review?"></textarea>
-                <button id="post-button" onclick="submitPost()">Post</button>
+                <button id="post-button" onclick="sendPostToDb()">Post</button>
             </div><br/><br/><br/>
             <div class='feed-contents'>
                 <div id="posted-content">
