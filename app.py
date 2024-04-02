@@ -226,8 +226,8 @@ def postMessage():
             message = request.json
             # for debugging
             #print(message, file=sys.stderr)
-            chat_collection.insert_one({"username": accout_data["username"], "anime": message["anime"], 
-                                        "review": message["review"], "id": str(message["id"]), "likes": []})
+            chat_collection.insert_one({"username": accout_data["username"], "anime": message["anime"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt"), 
+                                        "review": message["review"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt"), "id": str(message["id"]), "likes": []})
             response = make_response("Valid Post", 200)
             return response
         
