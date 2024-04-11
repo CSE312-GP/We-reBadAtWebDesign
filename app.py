@@ -55,7 +55,7 @@ def serveAnimeChatApp():
     for account in account_collection.find():
         account_data = {"username": account["username"], "auth": account["auth"]}
         if account_data["auth"] == sha256(user_auth.encode('utf-8')).hexdigest():
-            user_username = account_data["username"]
+            user_username = account_data["username"].replace("&amp", "&").replace("&lt", "<").replace("&gt", ">")
             # replace {{username}}
             response = make_response(render_template('loggedin.html', username=user_username))
             response.headers.add('Content-Type', 'text/html; charset=utf-8')
@@ -113,9 +113,9 @@ def serveRegister():
     #     flash(str(data))
 
     # grab username, password, and confirm password. Make sure to html injection protect.
-    username = request.form["username_registration"]
-    password = request.form["password_registration"]
-    confirm_password = request.form["password_confirmation"]
+    username = request.form["username_registration"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt")
+    password = request.form["password_registration"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt")
+    confirm_password = request.form["password_confirmation"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt")
 
     # test for if username is blank
     if username == "":
@@ -168,8 +168,8 @@ def serveLogin():
     account_collection = db["accounts"]
 
     # get login credentials
-    username = request.form["username_login"]
-    password = request.form["password_login"]
+    username = request.form["username_login"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt")
+    password = request.form["password_login"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt")
 
     # check if user exists
     for account in account_collection.find():
