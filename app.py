@@ -292,9 +292,10 @@ def serveLike():
                     # if user has already liked message send 403
                     print("Already liked this; will now try to remove it", file=sys.stderr)
                     my_query = {"id": chat_data["id"]}
+                    list = []
                     if user_liked_message:
                         for item in chat_data["likes"]:
-                            if item != str(account_data["username"])
+                            if item != account_data["username"]:
                                 list.append(str(item))
                         new_values = {"$set": {"likes": list}}
                         chat_collection.update_one(my_query, new_values)
