@@ -15,12 +15,12 @@
                 </form>
             </div>
         <!-- Textbox to make a post with the username --> 
-        <form id="post-form" action="/post-image" method="post" enctype="multipart/form-data">
-            <input type="text" id="anime-name" placeholder="Enter Anime Name" />
-            <textarea id="user-post" placeholder="What anime/manga did you want to review?"></textarea>
-            <label for="form-file">Upload an image with you post!</label>
-            <input id="form-file" type="file" name="upload"><br/>
-            <button id="post-button" onclick="sendPostToDb()">Post</button>
+        <form id="post-form" action="/submit-post" method="post" enctype="multipart/form-data">
+            <input type="text" name = "Title" id="anime-name" placeholder="Enter Anime Name"/>
+            <input type="text" name = "Review" id="user-post" placeholder="What anime/manga did you want to review?">
+                <label for="form-file">Upload an image with your post!</label>
+            <input type="file" name="Upload" id="form-file"><br/>
+            <input type="submit" id="post-button">Post</input>
         </form><br/><br/><br/>
 
             <div class='feed-contents'>
