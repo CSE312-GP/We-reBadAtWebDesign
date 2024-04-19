@@ -3,12 +3,19 @@ import json
 import sys
 from flask import Flask, Response, flash, redirect, render_template, make_response, request, send_file
 from hashlib import sha256
+import random
+from werkzeug.utils import secure_filename
+import os
 
 from pymongo import MongoClient
 
 from Public.response_functions import token_gen
 
+UPLOAD_FOLDER = 'Public/images/files'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #This decorator (the @ sign) makes the function setXContentTypeOptions run after recieve each request
 @app.after_request
@@ -223,17 +230,27 @@ def postMessage():
         accout_data = {"username": account["username"], "auth": account["auth"]}
         if accout_data["auth"] == sha256(user_auth.encode('utf-8')).hexdigest():
             # add post to chat collection
-            message = request.json
+            message = request.form
+            print(message, file=sys.stderr)
             # for debugging
             #print(message, file=sys.stderr)
-            chat_collection.insert_one({"username": accout_data["username"], "anime": message["anime"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt"), 
-                                        "review": message["review"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt"), "id": str(message["id"]), "likes": []})
-            response = make_response("Valid Post", 200)
+            chat_collection.insert_one({"username": accout_data["username"], "anime": message["Title"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt"), 
+                                        "review": message["Review"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt"), "id": str(token_gen()), "likes": []})
+            response = redirect("/AnimeChatApp", code=302)
             return response
         
     # if not valid auth
     response = make_response("Not allowed", 403)
     return response
+
+def token_gen():
+    token_string = ""
+    alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+    token = []
+    alphabet_length = len(alphabet) - 1
+    for c in range(0, 30):
+        token.append(alphabet[random.randint(0, alphabet_length)])
+    return token_string.join(token)
 
 
 # ===========
