@@ -27,6 +27,10 @@ body {
     align-items: flex-start; 
 }
 
+.error {
+    color: red;
+}
+
 #user-info {
     align-self: flex-start; 
     margin-bottom: 20px;

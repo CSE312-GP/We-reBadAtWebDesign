@@ -256,7 +256,45 @@ def postMessage():
             if file and allowed_file(file.filename):
                 mimetype = file.mimetype
                 print(mimetype, file=sys.stderr)
-                filename = secure_filename(file.filename)
+                print(type(mimetype), file=sys.stderr)
+                filename = ""
+                if mimetype == "image/jpeg":
+                    # handle jpg images
+                    # file naming
+                    media_count = 1
+                    filename = "chatJPGImage" + str(media_count) + ".jpg"
+                    file_path = UPLOAD_FOLDER + "/" + filename
+
+                    while os.path.exists(str(file_path)):
+                        media_count += 1
+                        filename = "chatJPGImage" + str(media_count) + ".jpg"
+                        file_path = UPLOAD_FOLDER + "/" + filename
+
+                elif mimetype == "image/png":
+                    # handle png images
+                    # file naming
+                    media_count = 1
+                    filename = "chatPNGImage" + str(media_count) + ".png"
+                    file_path = UPLOAD_FOLDER + "/" + filename
+
+                    while os.path.exists(str(file_path)):
+                        media_count += 1
+                        filename = "chatPNGImage" + str(media_count) + ".png"
+                        file_path = UPLOAD_FOLDER + "/" + filename
+
+                elif mimetype == "image/gif":
+                    # handle gif images
+                    # file naming
+                    media_count = 1
+                    filename = "chatGIFImage" + str(media_count) + ".gif"
+                    file_path = UPLOAD_FOLDER + "/" + filename
+
+                    while os.path.exists(str(file_path)):
+                        media_count += 1
+                        filename = "chatGIFImage" + str(media_count) + ".gif"
+                        file_path = UPLOAD_FOLDER + "/" + filename
+
+                # filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 # add html code for image
                 image_html = "<br><img src=\"/" + UPLOAD_FOLDER + "/" + filename + "\" width=\"400\" alt=\"" + filename + "\" class=\"my_image\"/>"
