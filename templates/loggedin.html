@@ -22,7 +22,16 @@
             <input type="file" name="Upload" id="form-file" onfocus="this.value=''" accept="image/*"><br/>
             <input type="submit" id="post-button" value="Post"></input>
         </form><br/><br/><br/>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div class="{{category}}">{{msg}}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %} 
+        <div class="errors">
 
+        </div> 
             <div class='feed-contents'>
                 <h2>Posts:</h2>
                 <div id="posted-content">
@@ -35,14 +44,7 @@
                         <br/>                
                     </span-->
                 </div>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, msg in messages %}
-                        <div class="{{category}}">{{msg}}</div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %} 
-            </div> 
+            </div>
         </div>
     </div>
 

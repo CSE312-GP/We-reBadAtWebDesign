@@ -1,7 +1,7 @@
 #Backend Python for our server
 import json
 import sys
-from flask import Flask, Response, flash, redirect, render_template, make_response, request, send_file
+from flask import Flask, Response, flash, redirect, render_template, make_response, request, send_file, send_from_directory
 from hashlib import sha256
 import random
 from werkzeug.utils import secure_filename
@@ -12,10 +12,11 @@ from pymongo import MongoClient
 from Public.response_functions import token_gen
 
 UPLOAD_FOLDER = 'Public/images/files'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 #This decorator (the @ sign) makes the function setXContentTypeOptions run after recieve each request
 @app.after_request
@@ -101,6 +102,11 @@ def serveCSS2():
 @app.route('/Public/feed.js')
 def serveJS2():
     response = send_file('Public/feed.js',mimetype='text/javascript')
+    return response
+
+@app.route('/Public/images/files/<filename>')
+def serveimage(filename):
+    response = send_from_directory(app.config["UPLOAD_FOLDER"], filename)
     return response
 
 # ===========
@@ -231,17 +237,48 @@ def postMessage():
         if accout_data["auth"] == sha256(user_auth.encode('utf-8')).hexdigest():
             # add post to chat collection
             message = request.form
-            print(message, file=sys.stderr)
-            # for debugging
-            #print(message, file=sys.stderr)
-            chat_collection.insert_one({"username": accout_data["username"], "anime": message["Title"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt"), 
-                                        "review": message["Review"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt"), "id": str(token_gen()), "likes": []})
-            response = redirect("/AnimeChatApp", code=302)
-            return response
+            username = accout_data["username"]
+            anime = message["Title"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt")
+            review = message["Review"].replace("&", "&amp").replace("<", "&lt").replace(">", "&gt")
+            id = str(token_gen())
+            likes = []
+            file = request.files['Upload']
+            # print(file, file=sys.stderr)
+            
+            # check if file exists or not
+            if not file:
+                # upload chat without picture
+                chat_collection.insert_one({"username": username, "anime": anime, "review": review, "id": id, "likes": likes})
+                response = redirect("/AnimeChatApp", code=302)
+                return response
+
+            # check if file name is secure
+            if file and allowed_file(file.filename):
+                mimetype = file.mimetype
+                print(mimetype, file=sys.stderr)
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                # add html code for image
+                image_html = "<br><img src=\"/" + UPLOAD_FOLDER + "/" + filename + "\" width=\"400\" alt=\"" + filename + "\" class=\"my_image\"/>"
+                review = "".join([review, image_html])
+
+                # insert data into database
+                chat_collection.insert_one({"username": username, "anime": anime, "review": review, "id": id, "likes": likes})
+                response = redirect("/AnimeChatApp", code=302)
+                return response
+            else:
+                # send error response with only allowed file types
+                flash("Only .png .jpg .jpeg and .gif files are allowed.", "error")
+                response = redirect("/AnimeChatApp", code=302)
+                return response
         
     # if not valid auth
     response = make_response("Not allowed", 403)
     return response
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def token_gen():
     token_string = ""

@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="13bde170-54f2-4219-93b7-3c6ae818380f" name="Changes" comment="" />
+    <list default="true" id="13bde170-54f2-4219-93b7-3c6ae818380f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -34,7 +36,7 @@
     "Python.app.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "frontend",
+    "git-widget-placeholder": "image__uploads",
     "last_opened_file_path": "C:/College Programming/CSE312/WebAppProject"
   }
 }]]></component>
