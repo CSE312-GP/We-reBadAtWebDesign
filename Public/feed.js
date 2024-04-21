@@ -94,7 +94,7 @@ function onLoadFunction() {
         //}
     //});
 
-    setInterval(updateFeed, 5000);
+    updateFeed();
 }
 
 function like(id) {
