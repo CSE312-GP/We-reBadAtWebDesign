@@ -65,9 +65,12 @@ function clearFeed() {
 
 function addPostToFeed(postJSON) {
     const feed = document.getElementById("posted-content");
-    feed.innerHTML += postToHTML(postJSON);
-    feed.scrollIntoView(false);
-    feed.scrollTop = feed.scrollHeight - feed.clientHeight;
+    const newPostHTML = postToHTML(postJSON);
+    feed.insertAdjacentHTML('afterbegin', newPostHTML);
+
+    //feed.innerHTML += postToHTML(postJSON);
+    //feed.scrollIntoView(false);
+    //feed.scrollTop = feed.scrollHeight - feed.clientHeight;
 }
 
 function postToHTML(postJSON) {
@@ -94,7 +97,7 @@ function onLoadFunction() {
         //}
     //});
 
-    updateFeed();
+    setInterval(updateFeed,5000);
 }
 
 function like(id) {
