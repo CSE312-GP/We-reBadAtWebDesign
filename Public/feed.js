@@ -81,12 +81,13 @@ function postToHTML(postJSON) {
     const likes = postJSON.likes;
     const num_of_likes = likes.length;
 
-    let messageHTML = "<form action='/like' method='POST' enctype='application/x-www-form-urlencoded'>";
+    let messageHTML = "<span id='post_" + id + "'><b>" + username + "- " + anime + "</b>: " + review + "<br/></span>"
+    messageHTML += "<form action='/like' method='POST' enctype='application/x-www-form-urlencoded'>";
     messageHTML += "<label><input type='hidden' name='postId' value='" + id + "'></label>"; 
     messageHTML += "<button type='submit' class='button-style' id='like-button-" + id + "'>&#128077; " + num_of_likes + "</button>";
     messageHTML += "</form>";
 
-    messageHTML += "<span id='post_" + id + "'><b>" + username + "- " + anime + "</b>: " + review + "<br/></span>"
+    // messageHTML += "<span id='post_" + id + "'><b>" + username + "- " + anime + "</b>: " + review + "<br/></span>"
     return messageHTML;
 }
 
